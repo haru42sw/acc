@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ACC 산출서">
+<title>ACC 산출서 v12</title>
+<style>
+:root{
+  --navy:#0f1e35;--navy2:#1a2f4a;--blue:#1e5fa8;
+  --accent:#e8a020;--accent2:#f0b840;
+  --green:#2a7a4b;--red:#c0392b;
+  --bg:#f0f2f5;--bg2:#e4e8ed;--white:#fff;
+  --text:#1a1a2e;--text2:#4a5568;--text3:#8a95a3;--border:#d0d8e4;
+  --sans:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  --mono:'SF Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:rgba(0,0,0,.06);}
+html{-ms-touch-action:manipulation;touch-action:manipulation;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%;}
+button,a,[role="button"]{touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none;}
+
+header{
+  background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;
+  padding:13px 16px;display:-webkit-flex;display:flex;
+  -webkit-align-items:center;align-items:center;
+  -webkit-justify-content:space-between;justify-content:space-between;
+  position:-webkit-sticky;position:sticky;top:0;z-index:200;
+  box-shadow:0 2px 10px rgba(0,0,0,.3);
+}
+.logo{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;}
+.logo-badge{width:36px;height:36px;background:var(--accent);border-radius:8px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;}
+.logo-text h1{font-size:15px;font-weight:700;}
+.logo-text p{font-size:10px;opacity:.55;margin-top:1px;}
+.hdr-btns{display:-webkit-flex;display:flex;gap:6px;}
+
+.btn{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:5px;padding:7px 12px;border-radius:8px;border:none;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;-webkit-appearance:none;appearance:none;}
+.btn-accent{background:var(--accent);color:var(--navy);}
+.btn-ghost{background:rgba(255,255,255,.18);color:#fff;}
+.btn:active{opacity:.65;}
+
+.summary{background:var(--white);border-bottom:1px solid var(--border);padding:10px 14px;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:7px;}
+.s-item{background:var(--bg);border-radius:8px;padding:8px 10px;-webkit-flex:1;flex:1;min-width:calc(50% - 4px);}
+.s-item.grn{background:#eaf4ee;}
+.s-item.tot{background:var(--navy);-webkit-flex-basis:100%;flex-basis:100%;border-radius:9px;}
+.s-lbl{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+.s-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--navy);}
+.s-item.grn .s-val{color:var(--green);}
+.s-item.tot .s-lbl{color:rgba(255,255,255,.55);}
+.s-item.tot .s-val{color:var(--accent2);font-size:18px;}
+
+.main{padding:12px;}
+.toolbar{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;margin-bottom:10px;}
+.sec-ttl{font-size:13px;font-weight:700;color:var(--text2);}
+.cnt{background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:var(--mono);margin-left:6px;}
+
+.item-list{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:8px;}
+.card{background:var(--white);border-radius:10px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(15,30,53,.07);}
+.card-head{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;padding:9px 11px;background:var(--bg);border-radius:10px 10px 0 0;border-bottom:1px solid var(--bg2);}
+.card-num{width:22px;height:22px;background:var(--navy);border-radius:5px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;font-family:var(--mono);flex-shrink:0;}
+
+.pick-btn{-webkit-flex:1;flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:7px;padding:9px 10px;font-family:var(--sans);font-size:12px;color:var(--text);text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;min-height:38px;}
+.pick-btn.on{border-color:var(--blue);background:#f5f9ff;}
+.pick-btn:active{opacity:.7;}
+.pick-lbl{-webkit-flex:1;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;}
+.pick-arr{color:var(--text3);font-size:10px;flex-shrink:0;margin-left:4px;pointer-events:none;}
+
+.del-btn{width:32px;height:32px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;-webkit-appearance:none;appearance:none;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;flex-shrink:0;border-radius:6px;}
+.del-btn:active{background:#ffe8e8;color:var(--red);}
+
+.card-info{padding:6px 12px 0;display:-webkit-flex;display:flex;gap:6px;-webkit-align-items:center;align-items:center;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+.vb{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;}
+.vb-dg{background:#e8f0fe;color:#2e5fb5;}
+.vb-ld{background:#e4f4eb;color:#2a7a4b;}
+.card-spec{font-size:11px;color:var(--text3);}
+.card-sell{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--navy);margin-left:auto;}
+
+.card-body{padding:10px 12px 12px;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:8px;}
+.card-field{-webkit-flex:1;flex:1;min-width:calc(33% - 6px);}
+.f-lbl{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:3px;}
+.f-inp{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 6px;font-family:var(--mono);font-size:14px;color:var(--text);background:var(--white);outline:none;text-align:center;-webkit-appearance:none;appearance:none;}
+.f-inp:focus{border-color:var(--blue);background:#f5f9ff;}
+.cost-row{width:100%;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;padding:4px 2px 0;font-size:11px;}
+.cost-row span{color:var(--text3);}
+.cost-row b{color:var(--blue);font-family:var(--mono);}
+
+.add-btn{width:100%;padding:14px;background:var(--white);border:2px dashed var(--border);border-radius:10px;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text3);display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;gap:6px;margin-top:6px;-webkit-appearance:none;appearance:none;}
+.add-btn:active{background:var(--bg2);border-color:var(--blue);color:var(--blue);}
+
+.empty{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:44px 20px;text-align:center;}
+.empty-ico{font-size:38px;margin-bottom:10px;}
+.empty-ttl{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:4px;}
+.empty-sub{font-size:12px;color:var(--text3);}
+
+.confirm-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;padding:14px 16px;z-index:2000;border-radius:14px 14px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.3);}
+.confirm-bar.show{display:block;}
+.confirm-msg{font-size:14px;font-weight:600;margin-bottom:12px;text-align:center;}
+.confirm-btns{display:-webkit-flex;display:flex;gap:10px;}
+.confirm-btns button{-webkit-flex:1;flex:1;padding:11px;border-radius:8px;border:none;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:700;-webkit-appearance:none;appearance:none;}
+.confirm-yes{background:var(--red);color:#fff;}
+.confirm-no{background:rgba(255,255,255,.15);color:#fff;}
+
+.print-guide{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:3000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:20px;}
+.print-guide.show{display:-webkit-flex;display:flex;}
+.pg-box{background:#fff;border-radius:14px;padding:24px 20px;max-width:320px;width:100%;text-align:center;}
+.pg-box h3{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--navy);}
+.pg-box p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px;}
+.pg-step{background:var(--bg);border-radius:8px;padding:10px 14px;margin:6px 0;font-size:13px;color:var(--text);text-align:left;}
+.pg-btn{width:100%;padding:12px;border:none;border-radius:9px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;-webkit-appearance:none;appearance:none;margin-top:8px;}
+.pg-print{background:var(--blue);color:#fff;margin-bottom:6px;}
+.pg-close{background:var(--bg2);color:var(--text2);}
+
+.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.48);z-index:1000;}
+.overlay.open{display:block;}
+.sheet{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;max-height:82vh;z-index:1001;-webkit-flex-direction:column;flex-direction:column;}
+.sheet.open{display:-webkit-flex;display:flex;}
+.sheet-handle{width:36px;height:4px;background:var(--bg2);border-radius:2px;margin:10px auto 0;flex-shrink:0;}
+.sheet-head{padding:10px 16px;border-bottom:1px solid var(--bg2);display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;flex-shrink:0;}
+.sheet-head h3{font-size:14px;font-weight:700;-webkit-flex:1;flex:1;}
+.close-btn{width:28px;height:28px;border:none;background:var(--bg);border-radius:50%;font-size:15px;cursor:pointer;-webkit-appearance:none;appearance:none;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;}
+.close-btn:active{background:var(--bg2);}
+.sheet-search{padding:10px 14px;border-bottom:1px solid var(--bg2);flex-shrink:0;}
+.sheet-search input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:15px;font-family:var(--sans);outline:none;background:var(--bg);color:var(--text);-webkit-appearance:none;appearance:none;}
+.sheet-search input:focus{border-color:var(--blue);background:#fff;}
+.sheet-list{overflow-y:auto;-webkit-overflow-scrolling:touch;-webkit-flex:1;flex:1;}
+.grp-lbl{padding:8px 16px 3px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;background:var(--bg);border-top:1px solid var(--bg2);position:-webkit-sticky;position:sticky;top:0;z-index:1;}
+.m-btn{width:100%;background:none;border:none;border-bottom:1px solid var(--bg2);padding:12px 16px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;cursor:pointer;font-family:var(--sans);text-align:left;-webkit-appearance:none;appearance:none;}
+.m-btn:active{background:var(--bg);}
+.m-name{font-size:13px;color:var(--text);-webkit-flex:1;flex:1;line-height:1.35;pointer-events:none;}
+.m-spec{font-size:11px;color:var(--text3);margin-top:1px;pointer-events:none;}
+.m-price{font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:600;flex-shrink:0;pointer-events:none;}
+.no-result{padding:30px;text-align:center;color:var(--text3);font-size:13px;}
+
+.toast{position:fixed;bottom:28px;left:50%;-webkit-transform:translateX(-50%) translateY(12px);transform:translateX(-50%) translateY(12px);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;-webkit-transition:opacity .28s,-webkit-transform .28s;transition:opacity .28s,transform .28s;z-index:9999;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;-webkit-transform:translateX(-50%) translateY(0);transform:translateX(-50%) translateY(0);}
+
+/* 잠금 화면 */
+.lock{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,var(--navy),#0a1628);z-index:10000;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:20px;}
+.lock.hide{display:none;}
+.lock-box{background:#fff;border-radius:16px;padding:32px 24px;max-width:300px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.4);}
+.lock-badge{width:56px;height:56px;background:var(--accent);border-radius:14px;display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);margin-bottom:14px;}
+.lock-box h2{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.lock-box p{font-size:12px;color:var(--text3);margin-bottom:18px;}
+.lock-inp{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:16px;text-align:center;outline:none;-webkit-appearance:none;appearance:none;letter-spacing:4px;}
+.lock-inp:focus{border-color:var(--blue);background:#f5f9ff;}
+.lock-inp.err{border-color:var(--red);background:#fff5f5;-webkit-animation:shake .4s;animation:shake .4s;}
+.lock-go{width:100%;padding:13px;border:none;border-radius:10px;background:var(--navy);color:#fff;font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;margin-top:12px;}
+.lock-go:active{opacity:.7;}
+.lock-msg{font-size:11px;color:var(--red);margin-top:8px;min-height:16px;}
+@-webkit-keyframes shake{0%,100%{-webkit-transform:translateX(0)}25%{-webkit-transform:translateX(-8px)}75%{-webkit-transform:translateX(8px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.app-wrap{display:none;}
+.app-wrap.show{display:block;}
+
+/* 관리자 모드 */
+.margin-field{display:none;}
+.admin-on .margin-field{display:block;}
+.cost-row{display:none;}
+.admin-on .cost-row{display:-webkit-flex;display:flex;}
+.admin-only{display:none;}
+.admin-on .admin-only{display:block;}
+.admin-badge{display:inline-flex;align-items:center;gap:4px;background:#e8a020;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;}
+.admin-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.admin-toggle-label{font-size:13px;font-weight:600;color:var(--navy);}
+.admin-toggle-sub{font-size:11px;color:var(--text3);}
+.toggle-sw{width:44px;height:26px;background:#ccc;border-radius:13px;position:relative;cursor:pointer;-webkit-appearance:none;appearance:none;border:none;flex-shrink:0;}
+.toggle-sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;}
+.toggle-sw.on{background:#238636;}
+.toggle-sw.on::after{transform:translateX(18px);}
+
+/* 비밀번호 변경 모달 */
+.pw-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:5000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:20px;}
+.pw-modal.show{display:-webkit-flex;display:flex;}
+.pw-box{background:#fff;border-radius:14px;padding:24px 20px;max-width:300px;width:100%;text-align:center;}
+.pw-box h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:16px;}
+.pw-field{margin-bottom:12px;text-align:left;}
+.pw-field label{font-size:11px;color:var(--text3);font-weight:600;display:block;margin-bottom:4px;}
+.pw-field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--sans);font-size:15px;outline:none;-webkit-appearance:none;appearance:none;}
+.pw-field input:focus{border-color:var(--blue);background:#f5f9ff;}
+.pw-save{width:100%;padding:12px;border:none;border-radius:9px;background:var(--navy);color:#fff;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;margin-top:4px;}
+.pw-save:active{opacity:.7;}
+.pw-cancel{width:100%;padding:12px;border:none;border-radius:9px;background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;-webkit-appearance:none;appearance:none;margin-top:6px;}
+.pw-cancel:active{opacity:.7;}
+.pw-msg{font-size:11px;color:var(--red);margin-top:8px;min-height:16px;}
+.pw-ok{color:var(--green);}
+
+/* 디버그 배너 */
+.dbg{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#2a7a4b;color:#fff;padding:6px 16px;border-radius:6px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.dbg.on{opacity:1;}
+
+@media print{header,.toolbar,.add-btn,.hdr-btns,.del-btn,.overlay,.sheet,.toast,.confirm-bar,.print-guide,.dbg,.lock,.pw-modal{display:none!important;}body{background:#fff;}.app-wrap{display:block!important;}.card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid;}.summary{position:static;}}
+</style>
+</head>
+<!-- ★ ontouchstart="" 빈 핸들러 = iOS에서 터치 이벤트 레이어 활성화 필수 트릭 -->
+<body ontouchstart="">
+
+<!-- 🔒 잠금 화면 -->
+<div class="lock" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-badge">ACC</div>
+    <h2>ACC 산출서</h2>
+    <p>에스브로 S-bro · 비밀번호를 입력하세요</p>
+    <input class="lock-inp" id="lockPw" type="password" placeholder="••••" maxlength="20"
+      autocomplete="off" autocorrect="off" autocapitalize="off">
+    <button class="lock-go" ontouchstart="T_unlock()" onclick="T_unlock()">확인</button>
+    <div class="lock-msg" id="lockMsg"></div>
+  </div>
+</div>
+
+<!-- 앱 본체 (잠금 해제 전 숨김) -->
+<div class="app-wrap" id="appWrap">
+
+<header>
+  <div class="logo">
+    <div class="logo-badge">ACC</div>
+    <div class="logo-text"><h1>ACC 산출서</h1><p>에스브로 S-bro · 자재원가 견적</p></div>
+  </div>
+  <div class="hdr-btns">
+    <button class="btn btn-ghost" ontouchstart="T.pwModal()" onclick="T.pwModal()">⚙️</button>
+    <button class="btn btn-ghost" ontouchstart="T.clear()" onclick="T.clear()">🗑 초기화</button>
+    <button class="btn btn-accent" ontouchstart="T.print()" onclick="T.print()">🖨 출력</button>
+  </div>
+</header>
+
+<div class="summary">
+  <div class="s-item admin-only"><div class="s-lbl">소 계 (원가)</div><div class="s-val" id="sC">0 원</div></div>
+  <div class="s-item grn"><div class="s-lbl">합 계 (판매가)</div><div class="s-val" id="sS">0 원</div></div>
+  <div class="s-item"><div class="s-lbl">부 가 세 10%</div><div class="s-val" id="sV">0 원</div></div>
+  <div class="s-item tot"><div class="s-lbl">최 종 견 적 금 액</div><div class="s-val" id="sT">0 원</div></div>
+</div>
+
+<main class="main">
+  <div class="toolbar">
+    <div><span class="sec-ttl">자재 내역</span><span class="cnt" id="cnt">0</span></div>
+  </div>
+  <div class="item-list" id="itemList"></div>
+  <button class="add-btn" ontouchstart="T.add()" onclick="T.add()">＋ 품목 추가</button>
+</main>
+
+<!-- 초기화 확인 -->
+<div class="confirm-bar" id="confirmBar">
+  <div class="confirm-msg">⚠️ 모든 항목을 초기화할까요?</div>
+  <div class="confirm-btns">
+    <button class="confirm-no" ontouchstart="T.confirmNo()" onclick="T.confirmNo()">취소</button>
+    <button class="confirm-yes" ontouchstart="T.confirmYes()" onclick="T.confirmYes()">초기화</button>
+  </div>
+</div>
+
+<!-- 출력 안내 -->
+<div class="print-guide" id="printGuide">
+  <div class="pg-box">
+    <h3>🖨 출력 / PDF 저장</h3>
+    <p>아이폰·아이패드에서는<br>Safari 공유 메뉴를 이용하세요.</p>
+    <div class="pg-step">① 하단 공유 버튼 (□↑) 터치</div>
+    <div class="pg-step">② "프린트" 또는 "PDF로 저장" 선택</div>
+    <button class="pg-btn pg-print" ontouchstart="T.printNow()" onclick="T.printNow()">맥북에서 바로 출력</button>
+    <button class="pg-btn pg-close" ontouchstart="T.printClose()" onclick="T.printClose()">닫기</button>
+  </div>
+</div>
+
+<!-- 모달 오버레이 -->
+<div class="overlay" id="overlay" ontouchstart="T.closeModal()" onclick="T.closeModal()"></div>
+
+<!-- 바텀 시트 -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h3>품목 선택</h3>
+    <button class="close-btn" ontouchstart="T.closeModal()" onclick="T.closeModal()">✕</button>
+  </div>
+  <div class="sheet-search">
+    <input type="search" id="modalQ" placeholder="🔍 품명 검색..."
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      oninput="T.search(this.value)">
+  </div>
+  <div class="sheet-list" id="sheetList"></div>
+</div>
+
+<!-- 비밀번호 변경 모달 -->
+<div class="pw-modal" id="pwModal">
+  <div class="pw-box">
+    <h3>⚙️ 설정</h3>
+
+    <!-- 관리자 모드 토글 -->
+    <div class="admin-toggle">
+      <div>
+        <div class="admin-toggle-label">🔐 관리자 모드</div>
+        <div class="admin-toggle-sub">마진율·단가 표시</div>
+      </div>
+      <button class="toggle-sw" id="adminToggle" ontouchstart="T.adminToggle()" onclick="T.adminToggle()"></button>
+    </div>
+    <div id="adminPwArea" style="display:none;margin-bottom:14px;">
+      <div class="pw-field">
+        <label>비밀번호 확인</label>
+        <input type="password" id="adminPwInp" placeholder="비밀번호 입력" autocomplete="off">
+      </div>
+      <button class="pw-save" style="font-size:13px;padding:10px;" ontouchstart="T.adminConfirm()" onclick="T.adminConfirm()">확인</button>
+      <div class="pw-msg" id="adminMsg"></div>
+    </div>
+
+    <div style="border-top:1px solid #e4e8ed;padding-top:14px;">
+      <h3 style="font-size:14px;margin-bottom:12px;">🔑 비밀번호 변경</h3>
+      <div class="pw-field">
+        <label>현재 비밀번호</label>
+        <input type="password" id="pwCur" placeholder="현재 비밀번호" autocomplete="off">
+      </div>
+      <div class="pw-field">
+        <label>새 비밀번호</label>
+        <input type="password" id="pwNew" placeholder="새 비밀번호" autocomplete="off">
+      </div>
+      <div class="pw-field">
+        <label>새 비밀번호 확인</label>
+        <input type="password" id="pwNew2" placeholder="한번 더 입력" autocomplete="off">
+      </div>
+      <button class="pw-save" ontouchstart="T.pwSave()" onclick="T.pwSave()">변경하기</button>
+    </div>
+    <div class="pw-msg" id="pwMsg"></div>
+    <button class="pw-cancel" ontouchstart="T.pwClose()" onclick="T.pwClose()">닫기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="dbg" id="dbg"></div>
+
+</div><!-- /app-wrap -->
+
+<script>
+/* ══════════════════════════════════════════
+   ACC 산출서 v10
+   — 비밀번호 보호 (localStorage 저장)
+   — 모달 스크롤 수정
+   ══════════════════════════════════════════ */
+
+/* ── 🔒 비밀번호 시스템 ──
+   기본 비밀번호: 1234
+   앱 내 ⚙️ 버튼으로 변경 가능 (localStorage에 저장)
+   ─────────────────────────────────────── */
+var DEFAULT_HASH='03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4';
+
+function getPassHash(){
+  try{ var h=localStorage.getItem('acc_pw_hash'); return h||DEFAULT_HASH; }
+  catch(e){ return DEFAULT_HASH; }
+}
+
+async function sha256(str){
+  var buf=new TextEncoder().encode(str);
+  var hash=await crypto.subtle.digest('SHA-256',buf);
+  var arr=Array.from(new Uint8Array(hash));
+  return arr.map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+}
+
+function T_unlock(){
+  var pw=document.getElementById('lockPw').value;
+  if(!pw){
+    document.getElementById('lockMsg').textContent='비밀번호를 입력하세요';
+    document.getElementById('lockPw').classList.add('err');
+    setTimeout(function(){document.getElementById('lockPw').classList.remove('err');},500);
+    return;
+  }
+  sha256(pw).then(function(h){
+    if(h===getPassHash()){
+      document.getElementById('lockScreen').classList.add('hide');
+      document.getElementById('appWrap').classList.add('show');
+    } else {
+      document.getElementById('lockMsg').textContent='비밀번호가 틀렸습니다';
+      document.getElementById('lockPw').value='';
+      document.getElementById('lockPw').classList.add('err');
+      setTimeout(function(){document.getElementById('lockPw').classList.remove('err');},500);
+      document.getElementById('lockPw').focus();
+    }
+  });
+}
+
+document.getElementById('lockPw').addEventListener('keydown',function(e){
+  if(e.key==='Enter') T_unlock();
+});
+
+/* ── 관리자 모드 ── */
+var isAdmin=false;
+
+function applyAdminMode(){
+  var wrap=document.getElementById('appWrap');
+  if(isAdmin){
+    wrap.classList.add('admin-on');
+    document.getElementById('adminToggle').classList.add('on');
+  } else {
+    wrap.classList.remove('admin-on');
+    document.getElementById('adminToggle').classList.remove('on');
+  }
+}
+/* ══════════════════════════════════════════
+   ACC 산출서 v8
+   ★ 핵심 전략: 인라인 ontouchstart/onclick
+   — addEventListener 완전 제거 (input/change 제외)
+   — iOS Safari file:// 에서 가장 확실한 방식
+   ══════════════════════════════════════════ */
+
+/* ── DB ── */
+var DB=[
+  ["DG-001","대광","루마·댐핑","300 루마 멀티기능장","블랙그라스-멀티300",98000,.20],
+  ["DG-002","대광","루마·댐핑","300 LT 루마 댐핑","망장/일반",52000,.20],
+  ["DG-003","대광","루마·댐핑","200 LT 루마 댐핑","",40000,.20],
+  ["DG-004","대광","루마·댐핑","150 LT 루마 댐핑","",31000,.20],
+  ["DG-005","대광","루마·댐핑","300 LT 망장 댐핑","우/좌",77000,.20],
+  ["DG-006","대광","백조 배수구","백조 깜뽀르떼 860 SET","828×432",398000,.20],
+  ["DG-007","대광","백조 배수구","백조 깜뽀르떼 900 SET","",624000,.20],
+  ["DG-008","대광","백조 배수구","백조 SQSR 780 크린배수건조","도마·크린",273000,.20],
+  ["DG-009","대광","백조 배수구","백조 SQSR 500","대억통",199500,.20],
+  ["DG-010","대광","백조 배수구","백조 SQSR 380","소억통",252500,.20],
+  ["DG-011","대광","후·엘리카","후 엘리카 에이라씨","ERAC",286000,.20],
+  ["DG-012","대광","후·엘리카","후 하츠 더블스쿼어","",360000,.20],
+  ["DG-013","대광","콘센트","콘센트 트위스트","***스텐 105파이",129000,.20],
+  ["DG-014","대광","콘센트","콘센트 바흐만 픽스","1구1구 스텐",82000,.20],
+  ["DG-015","대광","콘센트","콘센트 코너형 2구","뚜껑2구",23000,.20],
+  ["DG-016","대광","콘센트","콘센트 2구삼각코너용","스위치·삼각코너형",27000,.20],
+  ["DG-017","대광","씽크라인","씽크라인 배수구정리대","",8000,.20],
+  ["DG-018","대광","씽크라인","배수구 크린","소",24000,.20],
+  ["DG-019","대광","씽크라인","배수구 지하대 크린","",26000,.20],
+  ["DG-020","대광","냉장고캡","냉장고캡 알미늄 大","外56×570",8200,.20],
+  ["DG-021","대광","냉장고캡","냉장고캡 알미늄 小","外56×410내",8000,.20],
+  ["DG-022","대광","찬넬","찬넬 기둥 공간 고품질","2400 W7.9×D",9400,.20],
+  ["DG-023","대광","찬넬","찬넬 기둥 공간 비규격","",11500,.20],
+  ["DG-024","대광","찬넬","찬넬선반 공간 고품질","450mm 좌1/우1",12500,.20],
+  ["DG-025","대광","찬넬","찬넬선반 공간 고품질","350mm 좌1/우1",7700,.20],
+  ["DG-026","대광","찬넬","찬넬선반 공간 고품질","300mm 좌1/우1",7200,.20],
+  ["DG-027","대광","휨방지캡","휨방지캡-프론트형C","15T/18T용",9500,.20],
+  ["DG-028","대광","조정발","조정발 알미늄","고16~18T용",1200,.20],
+  ["DG-029","대광","수입경첩","수입경첩 블룸","18T 3DMP",2700,.20],
+  ["DG-030","대광","수입경첩","댐핑힌지 블룸 내장형","18T 3DMP",5200,.20],
+  ["DG-031","대광","수입경첩","155도 댐핑힌지 블룸","318T용 3DMP",10600,.20],
+  ["DG-032","대광","레일","연더 레일댐핑용 블룸","450~500mm",33000,.20],
+  ["DG-033","대광","드레스롬","드레스롬흑니켈 기둥","R410 2400mm",26000,.20],
+  ["DG-034","대광","드레스롬","드레스롬흑니켈 선반","좌/우 400mm",9000,.20],
+  ["DG-035","대광","드레스롬","옷봉 흑니켈무광 도금","3000mm",14500,.20],
+  ["DG-036","대광","기타","우산 꽃이한샘","8/box 220×240×400",10000,.20],
+  ["DG-037","대광","기타","팬트리장 부속","450홈도C",210000,.20],
+  ["DG-038","대광","기타","수전 파로니 림고","(8) 림고",250000,.20],
+  ["DG-039","대광","기타","제우스레일 상하","4200mm",140000,.20],
+  ["DG-040","대광","기타","암비아라인 서랍후레임 200 O/G","500mm",49300,.20],
+  ["LD-001","리드","레그라박스","레그라박스 이너소서랍","500mm / M",98800,.20],
+  ["LD-002","리드","레그라박스","레그라박스 이너전판","1,043mm",30500,.20],
+  ["LD-003","리드","레그라박스","레그라박스 소서랍","500mm / M",81500,.20],
+  ["LD-004","리드","레그라박스","레그라박스 중서랍","500mm / K",91900,.20],
+  ["LD-005","리드","레그라박스","레그라박스 대서랍","500mm / C",105800,.20],
+  ["LD-006","리드","레그라박스","레그라박스 대서랍","350mm / C",100700,.20],
+  ["LD-007","리드","레그라박스","레그라박스 크로스 갤러리봉","1,080mm",12000,.20],
+  ["LD-008","리드","안타로","안타로 미너소서랍 O/G","500mm",51000,.20],
+  ["LD-009","리드","안타로","안타로 중서랍 O/G","500mm",59000,.20],
+  ["LD-010","리드","안타로","안타로 대서랍 O/G","500mm",60500,.20],
+  ["LD-011","리드","INTIVO","INTIVO 대서랍 BOXCOVER","500mm",69000,.20],
+  ["LD-012","리드","INTIVO","INTIVO 강화유리 스리 500","8T 100×440",7000,.20],
+  ["LD-013","리드","언더레일","blum 언더레일 F/E","300mm",33800,.20],
+  ["LD-014","리드","언더레일","blum 언더레일 F/E","400mm",34200,.20],
+  ["LD-015","리드","언더레일","blum 언더레일 F/E","450mm",34600,.20],
+  ["LD-016","리드","언더레일","blum 언더레일 F/E","500mm",35000,.20],
+  ["LD-017","리드","언더레일","헤펠레 언더레일","300mm F/E",9200,.20],
+  ["LD-018","리드","언더레일","헤펠레 언더레일","400mm F/E",10000,.20],
+  ["LD-019","리드","언더레일","헤펠레 언더레일","450mm F/E",10800,.20],
+  ["LD-020","리드","언더레일","헤펠레 언더레일","500mm F/E",11200,.20],
+  ["LD-021","리드","언더레일","모멘토 언더레일 70kg","600mm",78100,.20],
+  ["LD-022","리드","BLUM힌지","BLUM-CLIP TOP 댐핑힌지","107도",4550,.20],
+  ["LD-023","리드","BLUM힌지","BLUM-CLIP TOP 일반힌지","107도",1550,.20],
+  ["LD-024","리드","BLUM힌지","BLUM-CLIP TOP 인도어 댐핑","110도",5000,.20],
+  ["LD-025","리드","BLUM힌지","BLUM-CLIP TOP 155 댐퍼일체","",9350,.20],
+  ["LD-026","리드","BLUM힌지","BLUM-CLIP TOP 155 일반힌지","",7100,.20],
+  ["LD-027","리드","BLUM힌지","BLUM-CLIP TOP 155 무스프링","",7200,.20],
+  ["LD-028","리드","BLUM힌지","BLUM-CLIP TOP M/P","18T",730,.20],
+  ["LD-029","리드","BLUM힌지","BLUM-TIP-ON 범퍼 76mm","매입형",8500,.20],
+  ["LD-030","리드","BLUM힌지","BLUM-AVENTOS HK-XS","20K1501",16300,.20],
+  ["LD-031","리드","BLUM힌지","BLUM-AVENTOS HL","20L2701 H450~580",168000,.20],
+  ["LD-032","리드","BLUM힌지","BLUM-AVENTOS HF","20F2501+H760~1040",162200,.20],
+  ["LD-033","리드","암비아라인","암비아라인 서랍후레임 200 O/G","500mm",49300,.20],
+  ["LD-034","리드","암비아라인","암비아라인 서랍후레임 100 O/G","500mm",40300,.20],
+  ["LD-035","리드","암비아라인","암비아라인 수저분리통 300 O/G","500mm",134500,.20],
+  ["LD-036","리드","암비아라인","암비아라인 칼꽂이","O/G",50900,.20],
+  ["LD-037","리드","SALICE","SALICE AIR WOOD","티타늄블랙 DX/SX",30200,.20],
+  ["LD-038","리드","SALICE","SALICE AIR 고정후레임","실버 295mm",48300,.20],
+  ["LD-039","리드","LED·조명","부착형 LED 8×9","661~662mm",18500,.20],
+  ["LD-040","리드","LED·조명","부착형 LED 12×8 COB","940mm",26300,.20],
+  ["LD-041","리드","LED·조명","부착형 LED 12×8 COB","1,800mm",50400,.20],
+  ["LD-042","리드","LED·조명","부착형 LED 12×8 COB","2,250mm",58500,.20],
+  ["LD-043","리드","LED·조명","매입조명 LED 0811 N Silv","913mm",27300,.20],
+  ["LD-044","리드","SMPS","SMPS 12V × 20W HAFELE","Loox5 ECO Driver",19500,.20],
+  ["LD-045","리드","SMPS","SMPS 12V × 40W HAFELE","833,74,962",31000,.20],
+  ["LD-046","리드","SMPS","SMPS 12V × 60W HAFELE","833,74,913",41000,.20],
+  ["LD-047","리드","SMPS","BIS SMPS 12V × 100W","",31000,.20],
+  ["LD-048","리드","아고폼","아고폼 매트","W600",10200,.20],
+  ["LD-049","리드","아고폼","아고폼 매트","W800",13600,.20],
+  ["LD-050","리드","아고폼","아고폼 매트","W950",16100,.20],
+  ["LD-051","리드","기타","KO-PUSH long 범퍼","매입형",3800,.20],
+  ["LD-052","리드","기타","BLUM-AVENTOS HL alu 봉","600用",9000,.20],
+  ["LD-053","리드","기타","POWER CORD Loox","2m",2500,.20],
+  ["LD-054","리드","기타","리드 롱소켓 흑니켈 좌","",2200,.20],
+  ["LD-055","리드","기타","리드 롱소켓 흑니켈 우","",2200,.20],
+  ["LD-056","리드","기타","리드 사각옷봉 흑니켈","",6600,.20],
+  ["LD-057","리드","기타","운임 택배","",4000,.00]
+];
+
+var nextId=1, rows=[], editId=null;
+
+function fmt(n){if(!n&&n!==0)return'-';return Math.round(n).toLocaleString('ko-KR');}
+function dbByCode(c){for(var i=0;i<DB.length;i++)if(DB[i][0]===c)return DB[i];return null;}
+function getRow(id){for(var i=0;i<rows.length;i++)if(rows[i].id===id)return rows[i];return null;}
+
+/* ── 디버그 배너 (로드 확인용, 2초 후 자동 소멸) ── */
+function dbg(msg){
+  var d=document.getElementById('dbg');
+  d.textContent='✓ '+msg;d.classList.add('on');
+  setTimeout(function(){d.classList.remove('on');},2000);
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2200);
+}
+
+/* ── 계산 ── */
+function recalc(){
+  var cost=0,sell=0,cnt=0;
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    if(r.item&&r.qty>0){cost+=r.item[5]*r.qty;sell+=r.item[5]*r.qty*(1+r.margin);cnt++;}
+  }
+  var vat=sell*.1;
+  document.getElementById('sC').textContent=fmt(cost)+' 원';
+  document.getElementById('sS').textContent=fmt(sell)+' 원';
+  document.getElementById('sV').textContent=fmt(vat)+' 원';
+  document.getElementById('sT').textContent=fmt(sell+vat)+' 원';
+  document.getElementById('cnt').textContent=cnt;
+}
+
+/* ══════════════════════════════════════════
+   ★ render: 동적 버튼에 인라인 ontouchstart/onclick
+   — addEventListener 절대 사용하지 않음
+   — iOS Safari file:// 에서 100% 동작 보장
+   ══════════════════════════════════════════ */
+function render(){
+  var list=document.getElementById('itemList');
+  if(!rows.length){
+    list.innerHTML='<div class="empty"><div class="empty-ico">📋</div><div class="empty-ttl">품목을 추가해서 견적을 작성하세요</div><div class="empty-sub">아래 ＋ 품목 추가를 눌러주세요</div></div>';
+    recalc();return;
+  }
+  var h='';
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i],it=r.item;
+    var sell=(it&&r.qty>0)?Math.round(it[5]*r.qty*(1+r.margin)):0;
+    var vc=it?(it[1]==='대광'?'vb-dg':'vb-ld'):'';
+    h+='<div class="card"><div class="card-head">';
+    h+='<div class="card-num">'+(i+1)+'</div>';
+    /* ★ 인라인 ontouchstart + onclick */
+    h+='<button class="pick-btn'+(it?' on':'')+'" ontouchstart="T.pick('+r.id+')" onclick="T.pick('+r.id+')">';
+    h+='<span class="pick-lbl">'+(it?it[3]:'<span style="color:#8a95a3">품명 선택</span>')+'</span>';
+    h+='<span class="pick-arr">▼</span></button>';
+    h+='<button class="del-btn" ontouchstart="T.del('+r.id+')" onclick="T.del('+r.id+')">✕</button>';
+    h+='</div>';
+    if(it){
+      h+='<div class="card-info"><span class="vb '+vc+'">'+it[1]+'</span>';
+      if(it[4])h+='<span class="card-spec">'+it[4]+'</span>';
+      if(sell>0)h+='<span class="card-sell">'+fmt(sell)+' 원</span>';
+      h+='</div>';
+    }
+    h+='<div class="card-body">';
+    /* input은 oninput/onchange 인라인 사용 */
+    h+='<div class="card-field"><label class="f-lbl">수 량</label>';
+    h+='<input class="f-inp" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="0" value="'+(r.qty||'')+'" oninput="T.qty('+r.id+',this)" onchange="T.qtyDone('+r.id+',this)"></div>';
+    h+='<div class="card-field"><label class="f-lbl">단 위</label>';
+    h+='<input class="f-inp" type="text" placeholder="EA" value="'+(r.unit||'')+'" onchange="T.unit('+r.id+',this)"></div>';
+    h+='<div class="card-field margin-field"><label class="f-lbl">마진율 %</label>';
+    h+='<input class="f-inp" type="tel" inputmode="numeric" pattern="[0-9]*" value="'+Math.round(r.margin*100)+'" onchange="T.margin('+r.id+',this)"></div>';
+    if(it)h+='<div class="cost-row"><span>단가: '+fmt(it[5])+'원</span><span>원가합계: <b>'+fmt(it[5]*(r.qty||0))+'원</b></span></div>';
+    h+='</div></div>';
+  }
+  list.innerHTML=h;
+  recalc();
+}
+
+/* ── 모달 ── */
+function openModal(id){
+  editId=id;
+  document.getElementById('modalQ').value='';
+  buildSheet('');
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  setTimeout(function(){document.getElementById('modalQ').focus();},120);
+}
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+  editId=null;
+}
+function buildSheet(q){
+  var query=(q||'').toLowerCase().trim();
+  var grouped={},keys=[];
+  for(var i=0;i<DB.length;i++){
+    var it=DB[i];
+    var key=it[1]+' · '+it[2];
+    var s=(it[3]+' '+it[4]+' '+it[1]+' '+it[2]).toLowerCase();
+    if(!query||s.indexOf(query)!==-1){
+      if(!grouped[key]){grouped[key]=[];keys.push(key);}
+      grouped[key].push(it);
+    }
+  }
+  var h='';
+  if(!keys.length){h='<div class="no-result">검색 결과가 없습니다</div>';}
+  else{
+    for(var k=0;k<keys.length;k++){
+      h+='<div class="grp-lbl">'+keys[k]+'</div>';
+      var items=grouped[keys[k]];
+      for(var m=0;m<items.length;m++){
+        var it2=items[m];
+        /* ★ 모달 품목: onclick만 사용 — ontouchstart는 스크롤과 충돌 */
+        h+='<button class="m-btn" onclick="T.sel(\''+it2[0]+'\')">';
+        h+='<div style="-webkit-flex:1;flex:1;pointer-events:none"><div class="m-name">'+it2[3]+'</div>';
+        if(it2[4])h+='<div class="m-spec">'+it2[4]+'</div>';
+        h+='</div><div class="m-price" style="pointer-events:none">'+fmt(Math.round(it2[5]*(1+it2[6])))+'원</div></button>';
+      }
+    }
+  }
+  document.getElementById('sheetList').innerHTML=h;
+}
+
+/* ══════════════════════════════════════════
+   ★ T 객체: 모든 인라인 핸들러의 진입점
+   — 전역 네임스페이스로 깔끔하게 관리
+   — ontouchstart / onclick 중복 실행 방지
+   ══════════════════════════════════════════ */
+var _lock=0;
+function guard(){
+  var now=Date.now();
+  if(now-_lock<350) return true; /* 중복 차단 */
+  _lock=now;
+  return false;
+}
+
+var T={
+  /* 품목 선택 모달 열기 */
+  pick: function(id){
+    if(guard()) return;
+    openModal(id);
+  },
+  /* 항목 삭제 */
+  del: function(id){
+    if(guard()) return;
+    rows=rows.filter(function(r){return r.id!==id;});
+    render();
+  },
+  /* 수량 실시간 입력 */
+  qty: function(id,el){
+    var r=getRow(id);
+    if(r){r.qty=parseInt(el.value)||0; recalc();}
+  },
+  /* 수량 확정 (change) */
+  qtyDone: function(id,el){
+    var r=getRow(id);
+    if(r){r.qty=parseInt(el.value)||0; render();}
+  },
+  /* 단위 */
+  unit: function(id,el){
+    var r=getRow(id);
+    if(r) r.unit=el.value;
+  },
+  /* 마진율 */
+  margin: function(id,el){
+    var r=getRow(id);
+    if(r){r.margin=(parseInt(el.value)||0)/100; recalc(); render();}
+  },
+  /* 모달에서 품목 선택 */
+  sel: function(code){
+    if(guard()) return;
+    var item=dbByCode(code);
+    if(!item||editId===null) return;
+    var row=getRow(editId);
+    if(!row) return;
+    row.item=item; row.margin=item[6];
+    if(!row.unit) row.unit='EA';
+    closeModal(); render();
+  },
+  /* 품목 추가 */
+  add: function(){
+    if(guard()) return;
+    var id=nextId++;
+    rows.push({id:id,item:null,qty:0,unit:'EA',margin:.35});
+    render();
+    setTimeout(function(){openModal(id);},80);
+  },
+  /* 초기화 */
+  clear: function(){
+    if(guard()) return;
+    if(!rows.length){showToast('항목이 없습니다');return;}
+    document.getElementById('confirmBar').classList.add('show');
+  },
+  confirmNo: function(){
+    if(guard()) return;
+    document.getElementById('confirmBar').classList.remove('show');
+  },
+  confirmYes: function(){
+    if(guard()) return;
+    document.getElementById('confirmBar').classList.remove('show');
+    rows=[];nextId=1;render();showToast('초기화되었습니다');
+  },
+  /* 출력 */
+  print: function(){
+    if(guard()) return;
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    if(isIOS){document.getElementById('printGuide').classList.add('show');}
+    else{window.print();}
+  },
+  printNow: function(){
+    if(guard()) return;
+    document.getElementById('printGuide').classList.remove('show');
+    setTimeout(function(){window.print();},100);
+  },
+  printClose: function(){
+    if(guard()) return;
+    document.getElementById('printGuide').classList.remove('show');
+  },
+  /* 모달 닫기 */
+  closeModal: function(){
+    if(guard()) return;
+    closeModal();
+  },
+  /* 검색 */
+  search: function(val){
+    buildSheet(val);
+  },
+  /* ── 비밀번호 변경 ── */
+  pwModal: function(){
+    if(guard()) return;
+    document.getElementById('pwCur').value='';
+    document.getElementById('pwNew').value='';
+    document.getElementById('pwNew2').value='';
+    document.getElementById('pwMsg').textContent='';
+    document.getElementById('pwMsg').classList.remove('pw-ok');
+    document.getElementById('adminPwInp').value='';
+    document.getElementById('adminMsg').textContent='';
+    document.getElementById('adminPwArea').style.display='none';
+    applyAdminMode();
+    document.getElementById('pwModal').classList.add('show');
+  },
+  pwClose: function(){
+    if(guard()) return;
+    document.getElementById('pwModal').classList.remove('show');
+  },
+  /* 관리자 모드 토글 */
+  adminToggle: function(){
+    if(guard()) return;
+    if(isAdmin){
+      /* 관리자 모드 끄기 - 바로 해제 */
+      isAdmin=false;
+      applyAdminMode();
+      document.getElementById('adminPwArea').style.display='none';
+      render();
+    } else {
+      /* 관리자 모드 켜기 - 비밀번호 필요 */
+      document.getElementById('adminPwArea').style.display='block';
+      document.getElementById('adminPwInp').value='';
+      document.getElementById('adminMsg').textContent='';
+      document.getElementById('adminPwInp').focus();
+    }
+  },
+  adminConfirm: function(){
+    if(guard()) return;
+    var pw=document.getElementById('adminPwInp').value;
+    var msg=document.getElementById('adminMsg');
+    if(!pw){msg.textContent='비밀번호를 입력하세요';return;}
+    sha256(pw).then(function(h){
+      if(h===getPassHash()){
+        isAdmin=true;
+        applyAdminMode();
+        document.getElementById('adminPwArea').style.display='none';
+        msg.textContent='';
+        render();
+      } else {
+        msg.textContent='비밀번호가 틀렸습니다';
+        document.getElementById('adminPwInp').value='';
+      }
+    });
+  },
+  pwSave: function(){
+    if(guard()) return;
+    var cur=document.getElementById('pwCur').value;
+    var nw=document.getElementById('pwNew').value;
+    var nw2=document.getElementById('pwNew2').value;
+    var msg=document.getElementById('pwMsg');
+    msg.classList.remove('pw-ok');
+
+    if(!cur){msg.textContent='현재 비밀번호를 입력하세요';return;}
+    if(!nw){msg.textContent='새 비밀번호를 입력하세요';return;}
+    if(nw.length<4){msg.textContent='4자리 이상 입력하세요';return;}
+    if(nw!==nw2){msg.textContent='새 비밀번호가 일치하지 않습니다';return;}
+
+    sha256(cur).then(function(h){
+      if(h!==getPassHash()){
+        msg.textContent='현재 비밀번호가 틀렸습니다';
+        return;
+      }
+      sha256(nw).then(function(newH){
+        try{localStorage.setItem('acc_pw_hash',newH);}catch(e){}
+        msg.classList.add('pw-ok');
+        msg.textContent='✓ 비밀번호가 변경되었습니다';
+        setTimeout(function(){
+          document.getElementById('pwModal').classList.remove('show');
+        },1200);
+      });
+    });
+  }
+};
+
+/* ── 초기 렌더링 ── */
+render();
+recalc();
+applyAdminMode();
+document.getElementById('adminPwInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter') T.adminConfirm();
+});
+dbg('v12 로드 완료');
+</script>
+</body>
+</html>
